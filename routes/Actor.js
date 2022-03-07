@@ -5,12 +5,15 @@ const {
   listActors,
   getSpecificActor,
   updateActor,
+  importActors,
 } = require("../controllers/actorController");
 
 const { requireAuth } = require("../middleware/checkAuth");
+router.get("/import", requireAuth, importActors);
 router.get("/", listActors);
-router.post("/add", requireAuth, addActor);
-router.get("/single", requireAuth, getSpecificActor);
-router.put("/update", requireAuth, updateActor);
+router.post("/", requireAuth, addActor);
+router.get("/:id", requireAuth, getSpecificActor);
+router.put("/:id", requireAuth, updateActor);
+
 
 module.exports = router;

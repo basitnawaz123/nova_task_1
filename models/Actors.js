@@ -17,8 +17,9 @@ const ActorSchema = mongoose.Schema(
       enum: ["male", "female"],
     },
 
-    reviews: {
+    picture: {
       type: String,
+      required: [true, "please upload actor profile picture"],
     },
   },
   {
