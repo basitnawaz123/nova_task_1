@@ -20,6 +20,10 @@ app.get("/", (req, res) => {
   res.send("Nova Internship Task 00");
 });
 
+
+
+
+
 // Registering Routes from route folder
 var userRouter = require("./routes/User");
 var authRouter = require("./routes/Auth");
