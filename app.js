@@ -1,8 +1,9 @@
 const express = require("express");
-const connectDB = require("./db/config");
+const connectDB = require("./config/db");
 const bp = require("body-parser");
 const app = express();
-const PORT = 8080;
+require("dotenv").config();
+
 const fs = require("fs");
 
 app.use(bp.json());
@@ -11,8 +12,8 @@ app.use(bp.urlencoded({ extended: true }));
 connectDB();
 
 // Server connection
-app.listen(PORT, () => {
-  console.log(`Server is running at ${PORT}`);
+app.listen(process.env.PORT, () => {
+  console.log(`Server is running at ${process.env.PORT}`);
 });
 
 app.get("/", (req, res) => {
