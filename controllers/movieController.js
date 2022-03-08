@@ -1,6 +1,8 @@
 const MoviesModel = require("../models/Movies");
 const json2csv = require("json2csv").parse;
 const fs = require("fs");
+const mime = require("mime");
+
 const path = require("path");
 
 const getMovies = async (req, res) => {
@@ -10,7 +12,7 @@ const getMovies = async (req, res) => {
       select: "name age gender",
     });
 
-    if (result) {
+    if (result.length > 0) {
       res.json(result);
     } else {
       res.send("No movies found!");
@@ -22,26 +24,33 @@ const getMovies = async (req, res) => {
 
 // Add New Movie
 const addMovie = async (req, res) => {
-  const filename = req.file;
-  let extArray = filename.mimetype.split("/");
-  let extension = extArray[extArray.length - 1];
-  let poster =
-    process.env.BASE_URL +
-    "/uploads/movie_posters/" +
-    "poster_" +
-    Date.now() +
-    "." +
-    extension;
-  const { name, genre, businessDone, actors, reviews, rating } = req.body;
+  var matches = req.body.poster.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/),
+    response = {};
+  if (matches.length !== 3) {
+    return new Error("Invalid input string");
+  }
+
+  response.type = matches[1];
+  response.data = new Buffer.from(matches[2], "base64");
+  let decodedImg = response;
+  let imageBuffer = decodedImg.data;
+
+  let type = decodedImg.type;
+
+  let ext = mime.getExtension(type);
+  let fileName = `poster_${Date.now()}.${ext}`;
+
+  fs.writeFileSync("./uploads/movie_posters/" + fileName, imageBuffer, "utf8");
+
+  const { name, genre, businessDone, actors, reviews } = req.body;
 
   const movieData = new MoviesModel({
     name,
     genre,
     actors,
     reviews,
-    rating,
     businessDone,
-    poster,
+    poster: req.body.poster,
   });
 
   try {
@@ -59,7 +68,7 @@ const single = async (req, res) => {
     path: "actors._id",
     select: "name age gender",
   });
-  if (result) {
+  if (result.length > 0) {
     res.json(result);
   } else {
     res.send("Record not found!");
@@ -71,7 +80,7 @@ const getMovieByGenre = async (req, res) => {
   const genre = req.params.genre;
   try {
     const result = await MoviesModel.find({ genre });
-    if (result) {
+    if (result.length > 0) {
       res.status(200).json(result);
     } else {
       res.send("No record found!");
@@ -119,17 +128,21 @@ const calculateBusinessByActor = async (req, res) => {
 
 const updateMovie = async (req, res) => {
   _id = req.params.id;
+  var matches = req.body.poster.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/),
+    response = {};
+  if (matches.length !== 3) {
+    return new Error("Invalid input string");
+  }
 
-  const filename = req.file;
-  let extArray = filename.mimetype.split("/");
-  let extension = extArray[extArray.length - 1];
-  let poster =
-    process.env.BASE_URL +
-    "/uploads/movie_posters/" +
-    "poster_" +
-    Date.now() +
-    "." +
-    extension;
+  response.type = matches[1];
+  response.data = new Buffer.from(matches[2], "base64");
+  let decodedImg = response;
+  let imageBuffer = decodedImg.data;
+  let type = decodedImg.type;
+  let ext = mime.getExtension(type);
+  let fileName = `poster_${Date.now()}.${ext}`;
+
+  fs.writeFileSync("./uploads/movie_posters/" + fileName, imageBuffer, "utf8");
 
   const { reviews } = req.body;
 
@@ -139,7 +152,10 @@ const updateMovie = async (req, res) => {
       {
         $push: {
           reviews,
-          poster,
+        },
+
+        $set: {
+          poster: fileName,
         },
       }
     );

@@ -20,7 +20,13 @@ app.get("/", (req, res) => {
   res.send("Nova Internship Task 00");
 });
 
+const mime = require("mime");
 
+// parse application/x-www-form-urlencoded
+app.use(bp.urlencoded({ extended: false }));
+
+// parse application/json
+app.use(bp.json());
 
 
 

@@ -36,10 +36,10 @@ const MovieSchema = mongoose.Schema(
       required: [true, "Please enter Business Done"],
     },
 
-    // poster: {
-    //   type: String,
-    //   required: [true, "Movie poster required"],
-    // },
+    poster: {
+      type: String,
+      required: [true, "Movie poster required"],
+    },
   },
   {
     timestamps: true,
