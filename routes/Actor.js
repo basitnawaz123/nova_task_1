@@ -9,7 +9,6 @@ const {
   importActors,
 } = require("../controllers/actorController");
 
-// multer
 
 // SET STORAGE
 var storage = multer.diskStorage({
@@ -19,7 +18,7 @@ var storage = multer.diskStorage({
   filename: function (req, file, cb) {
     let extArray = file.mimetype.split("/");
     let extension = extArray[extArray.length - 1];
-    cb(null, "actor_" + "-" + Date.now() + "." + extension);
+    cb(null, "actor_"+ Date.now() + "." + extension);
   },
 });
 

@@ -38,7 +38,9 @@ const importActors = (req, res) => {
                 ? "female"
                 : "male",
             age: Math.floor(Math.random() * 70) + 25,
-            picture: `actor_${path.basename(element.picture)}`,
+            picture: `${
+              process.env.BASE_URL
+            }/uploads/actors/actor_${path.basename(element.picture)}`,
           });
 
           await actorsData.save();
@@ -57,8 +59,14 @@ const addActor = async (req, res) => {
     const filename = req.file;
     let extArray = filename.mimetype.split("/");
     let extension = extArray[extArray.length - 1];
-    let picture = "actor_" + Date.now() + "." + extension;
-    const { name, age, gender, createdBy } = req.body;
+    let picture =
+      process.env.BASE_URL +
+      "/uploads/actors/" +
+      "actor_" +
+      Date.now() +
+      "." +
+      extension;
+    const { name, age, gender } = req.body;
     const actors = new actorModel({
       name,
       age,
